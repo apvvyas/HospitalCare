@@ -8,6 +8,7 @@ import Settings from "../components/Settings";
 import store from "../store";
 import DrawerContent from "../components/DrawerContent";
 
+//Define All the navigatable routes
 const routes = {
 	app:App,
 	login:Login,
@@ -18,6 +19,7 @@ const routes = {
 	settings:Settings
 };
 
+//Route Class for any execution
 export default class Route{
 
 	getRoutes() {
@@ -33,8 +35,9 @@ export default class Route{
 	}
 
 	getRender(){
+		let routeScreen = this.getRoutes();
 		let beforeAuthRenderJson = {
-	    	render: h => h("frame", [h(this.getRoutes())]),
+	    	render: h => h("frame", [h(routeScreen)]),
 	    	store
 	  	}
 		let renderJson = {
@@ -43,7 +46,7 @@ export default class Route{
 		          App,
 		          [
 		            h(DrawerContent, { slot: 'drawerContent' }),
-		            h(this.getRoutes(), { slot: 'mainContent' })
+		            h(routeScreen, { slot: 'mainContent' })
 		          ]
 		        )
 		      },

@@ -36,31 +36,14 @@
 		</FlexboxLayout>
 	</Page>
 </template>
-import Vue from 'nativescript-vue';
-import * as application from 'tns-core-modules/application';
 
 <script>
-// A stub for a service that authenticates users.
-const userService = {
-    register(user) {
-        return Promise.resolve(user);
-    },
-    login(user) {
-        return Promise.resolve(user);
-    },
-    resetPassword(email) {
-        return Promise.resolve(email);
-    }
-};
 
-// A stub for the main page of your app. In a real app you’d put this page in its own .vue file.
-const HomePage = {
-    template: `
-<Page>
-	<Label class="m-20" textWrap="true" text="You have successfully authenticated. This is where you build your core application functionality."></Label>
-</Page>
-`
-};
+import Vue from 'nativescript-vue';
+import * as application from 'tns-core-modules/application';
+import UserService from '@/services/user-service';
+import Home from '@/components/Home';
+// A stub for a service that authenticates users.
 
 export default {
     data() {
@@ -93,10 +76,14 @@ export default {
         },
 
         login() {
-            userService
+            UserService
                 .login(this.user)
-                .then(() => {
-                    this.$navigateTo(HomePage);
+                .then((response) => {
+                    this.$store.dispatch('setConfig', {
+                        token   :   response.data.success,
+                        user    :   response.data.user
+                    })
+                    this.$navigateTo(Home);
                 })
                 .catch(() => {
                     this.alert("Unfortunately we could not find your account.");
@@ -109,7 +96,7 @@ export default {
                 return;
             }
 
-            userService
+            UserService
                 .register(this.user)
                 .then(() => {
                     this.alert("Your account was successfully created.");
@@ -133,8 +120,8 @@ export default {
                 cancelButtonText: "Cancel"
             }).then(data => {
                 if (data.result) {
-                    userService
-                        .resetPassword(data.text.trim())
+                    UserService
+                        .forgotPass(data.text.trim())
                         .then(() => {
                             this.alert(
                                 "Your password was successfully reset. Please check your email for instructions on choosing a new password."
@@ -160,7 +147,7 @@ export default {
 
         alert(message) {
             return alert({
-                title: "APP NAME",
+                title: "HospitalCare",
                 okButtonText: "OK",
                 message: message
             });
